@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Workspace agent customizations folder (`agents/` / `.agents/`) with:
+  - `taste` skill: Anti-slop frontend design framework from [tasteskill.dev](https://www.tasteskill.dev/).
+  - `graphify` skill: Codebase architecture knowledge graph extractor and query tool from [Graphify](https://github.com/Graphify-Labs/graphify).
+  - Agent rules: `prototype-standards.md` and `frontend-architecture.md`.
 - Additional math topic prototypes (e.g., number bonds, 100-chart patterns, multi-digit carryover).
 
 ## [0.1.0] - 2026-10-08
