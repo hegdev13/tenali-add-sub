@@ -1,17 +1,19 @@
 # tenali-add-sub
 
-A collection and playground of prototypes for math addition and subtraction interactions.
+A collection and playground of interactive prototypes for foundational math (addition, subtraction, and place-value visual models).
 
 ## Project Structure
 
-```
+```text
 tenali-add-sub/
-├── frontend/          # React + Vite + TypeScript prototype client
-│   ├── src/           # UI components and prototype views
-│   └── .env.example   # Frontend environment variables template
-├── backend/           # Node.js + Express + TypeScript API prototype server
-│   ├── src/           # Express server & prototype calculation endpoints
-│   └── .env.example   # Backend environment variables template
+├── frontend/          # React + Vite + TypeScript prototype gallery
+│   ├── src/
+│   │   ├── topics/    # 📂 All learning module prototypes
+│   │   ├── App.tsx    # Gallery shell, switcher & sandbox
+│   │   └── index.css  # Dark-mode styling, micro-animations & tokens
+├── backend/           # Node.js + Express + TypeScript API server
+├── AGENTS.md          # AI agent & contributor guidelines
+├── CHANGELOG.md       # Keep a Changelog standard release history
 ├── .gitignore         # Ignores node_modules, build outputs, and .env files
 ├── .env.example       # Root environment variable template
 └── package.json       # Root scripts to orchestrate frontend and backend
@@ -22,27 +24,27 @@ tenali-add-sub/
 ### 1. Install Dependencies
 
 ```bash
-# Install both frontend and backend dependencies
 npm run install:all
-```
-
-Or individually:
-
-```bash
-cd frontend && npm install
-cd backend && npm install
 ```
 
 ### 2. Run Prototypes
 
-- **Frontend**:
+- **Frontend Gallery**:
   ```bash
   npm run dev:frontend
-  # or from frontend/: npm run dev
+  ```
+  Open [http://localhost:5173](http://localhost:5173) to view the interactive gallery and prototypes.
+
+- **Build Check**:
+  ```bash
+  npm run build:frontend
   ```
 
 - **Backend**:
   ```bash
   npm run dev:backend
-  # or from backend/: npm run dev
   ```
+
+## Contributing & Adding New Prototypes
+
+See [AGENTS.md](AGENTS.md) for detailed guidelines on how to structure and register new topics and modules in seconds.
