@@ -1,0 +1,10 @@
+{
+  "name": "tenali-add-sub",
+  "private": true,
+  "description": "Prototype workspace for tenali-add-sub",
+  "scripts": {
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "install:all": "npm --prefix frontend install && npm --prefix backend install"
+  }
+}
