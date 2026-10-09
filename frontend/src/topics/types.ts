@@ -20,7 +20,6 @@ export interface Topic {
   slug: string;
   description: string;
   badge: string;
-  gradeLevel: string;
   iconName: 'PlusCircle' | 'MinusCircle' | 'Layers' | 'Sparkles' | 'Binary';
   accentColor: string;
   modules: LearningModule[];

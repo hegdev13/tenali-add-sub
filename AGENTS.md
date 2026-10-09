@@ -61,7 +61,6 @@ export const myNewTopic: Topic = {
   slug: 'my-topic-slug',
   description: 'Clear pedagogical summary of this topic.',
   badge: 'Foundation K-2',
-  gradeLevel: 'Grade 1 - 2',
   iconName: 'PlusCircle', // or 'MinusCircle', 'Layers', 'Sparkles'
   accentColor: '#38bdf8', // Hex accent color
   modules: [

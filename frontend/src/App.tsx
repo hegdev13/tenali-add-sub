@@ -20,7 +20,6 @@ export const App: React.FC = () => {
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [activeGradeFilter, setActiveGradeFilter] = useState<string>('all');
   const [isGuideModalOpen, setIsGuideModalOpen] = useState<boolean>(false);
 
   // Active topic object
@@ -38,7 +37,7 @@ export const App: React.FC = () => {
     return activeTopic.modules[0];
   }, [activeTopic, selectedModuleId]);
 
-  // Filtered topics based on search & grade
+  // Filtered topics based on search
   const filteredTopics = useMemo(() => {
     return TOPICS.filter((topic) => {
       const matchesSearch =
@@ -52,12 +51,9 @@ export const App: React.FC = () => {
             m.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
         );
 
-      const matchesGrade =
-        activeGradeFilter === 'all' || topic.gradeLevel === activeGradeFilter;
-
-      return matchesSearch && matchesGrade;
+      return matchesSearch;
     });
-  }, [searchQuery, activeGradeFilter]);
+  }, [searchQuery]);
 
   // Handler to open a specific module
   const handleOpenModule = (topic: Topic, module: LearningModule) => {
@@ -250,68 +246,71 @@ export const App: React.FC = () => {
 
             <div className="section-header">
               <h3 className="section-title">Explore Learning Topics</h3>
-              <div className="mode-toggle-group">
+            </div>
+
+            {TOPICS.length === 0 ? (
+              <div className="empty-topics-card" id="empty-topics-state">
+                <div className="empty-icon-wrapper">
+                  <Atom size={36} />
+                </div>
+                <h4>No Topics Added Yet</h4>
+                <p>
+                  The gallery is ready for your prototype topics. Create a folder in <code>src/topics/&lt;topic-slug&gt;/</code> and register it in <code>src/topics/index.ts</code>.
+                </p>
                 <button
-                  className={`btn-pill ${activeGradeFilter === 'all' ? 'active' : ''}`}
-                  onClick={() => setActiveGradeFilter('all')}
+                  id="empty-state-guide-btn"
+                  className="btn btn-primary"
+                  onClick={() => setIsGuideModalOpen(true)}
                 >
-                  All Grades
-                </button>
-                <button
-                  className={`btn-pill ${activeGradeFilter === 'Grade 1 - 2' ? 'active' : ''}`}
-                  onClick={() => setActiveGradeFilter('Grade 1 - 2')}
-                >
-                  Grade 1 - 2
-                </button>
-                <button
-                  className={`btn-pill ${activeGradeFilter === 'Grade 2 - 3' ? 'active' : ''}`}
-                  onClick={() => setActiveGradeFilter('Grade 2 - 3')}
-                >
-                  Grade 2 - 3
+                  <Code2 size={16} /> How to Add a Topic
                 </button>
               </div>
-            </div>
-
-            <div className="topics-grid">
-              {filteredTopics.map((topic) => (
-                <div key={topic.id} className="topic-card" id={`topic-card-${topic.id}`}>
-                  <div className="topic-card-header">
-                    <div className="topic-card-title-group">
-                      <div
-                        className="topic-avatar"
-                        style={{ backgroundColor: `${topic.accentColor}25`, color: topic.accentColor }}
-                      >
-                        {renderTopicIcon(topic.iconName, 22)}
-                      </div>
-                      <div>
-                        <h4 className="topic-card-title">{topic.title}</h4>
-                        <span className="topic-badge">{topic.gradeLevel}</span>
+            ) : filteredTopics.length === 0 ? (
+              <div className="empty-topics-card">
+                <h4>No matching topics found</h4>
+                <p>Try searching for a different keyword.</p>
+              </div>
+            ) : (
+              <div className="topics-grid">
+                {filteredTopics.map((topic) => (
+                  <div key={topic.id} className="topic-card" id={`topic-card-${topic.id}`}>
+                    <div className="topic-card-header">
+                      <div className="topic-card-title-group">
+                        <div
+                          className="topic-avatar"
+                          style={{ backgroundColor: `${topic.accentColor}25`, color: topic.accentColor }}
+                        >
+                          {renderTopicIcon(topic.iconName, 22)}
+                        </div>
+                        <div>
+                          <h4 className="topic-card-title">{topic.title}</h4>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <p className="topic-card-desc">{topic.description}</p>
+                    <p className="topic-card-desc">{topic.description}</p>
 
-                  <div className="module-mini-list">
-                    {topic.modules.map((mod) => (
-                      <div key={mod.id} className="module-mini-item">
-                        <div className="module-mini-info">
-                          <h5>{mod.title}</h5>
-                          <p>{mod.description}</p>
+                    <div className="module-mini-list">
+                      {topic.modules.map((mod) => (
+                        <div key={mod.id} className="module-mini-item">
+                          <div className="module-mini-info">
+                            <h5>{mod.title}</h5>
+                            <p>{mod.description}</p>
+                          </div>
+                          <button
+                            id={`launch-${topic.id}-${mod.id}`}
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleOpenModule(topic, mod)}
+                          >
+                            <Play size={12} /> Launch
+                          </button>
                         </div>
-                        <button
-                          id={`launch-${topic.id}-${mod.id}`}
-                          className="btn btn-primary btn-sm"
-                          onClick={() => handleOpenModule(topic, mod)}
-                        >
-                          <Play size={12} /> Launch
-                        </button>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         ) : (
           /* Active Prototype Sandbox Mode */
