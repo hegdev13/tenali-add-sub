@@ -12,10 +12,12 @@ All interactive learning modules and prototypes created in this repository must 
    - Each prototype must be registered as a `LearningModule` within its parent `Topic` in `frontend/src/topics/<topic-slug>/index.ts`.
    - All topics must be registered in the master `TOPICS` array in `frontend/src/topics/index.ts`.
 
-2. **Pedagogical Anchors**:
-   - Math prototypes must ground abstract mathematical rules in concrete representations (e.g., ten-frames, number lines, base-10 blocks, bead strings).
-   - Provide visual feedback that demystifies procedures (e.g., decomposing a 10-rod into 10 ones units rather than calling it "borrowing").
-   - Include a concise "Pedagogical Goal" or "Insight" note within the module UI.
+2. **Example → Question → Answer → Verification**:
+   - Every prototype shows a worked example, asks a question, takes the student's answer, and verifies it with clear (preferably visual) feedback.
+   - No explanatory paragraphs. Communicate through visuals, animation and short captions that name what is happening.
+   - Ground abstract rules in concrete representations (e.g., ten-frames, number lines, objects, base-10 blocks).
+   - Source worksheets are inspiration only; build a better interactive experience, not a copy.
+   - Keep structure and look close to the live Tenali site (https://tenali.fun/summership/) so prototypes port easily.
 
 3. **Accessibility and Testing**:
    - Every interactive element (buttons, sliders, inputs, toggles) must have a descriptive, unique `id` attribute.

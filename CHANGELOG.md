@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Level 16.0 Task 3 (`/level-16-0/task-3`): counting is adding one. A ten-frame reference grows one block at a time with "+1" animations; the child matches it block by block. Shared `HintHand` component.
+- URL routes via a small History API router: `/<module-id>` and `/<module-id>/task-<n>` (e.g. `/level-16-0/task-2`), with working back/forward.
+- Level 16.0 page: Task 1 (paper bits into a basket with +1 counting, spread slider, win celebration) and Task 2 (arrange blocks 1-10 in order, with an idle hand hint).
+- Shared `WinOverlay` (confetti + message) and `src/components/` split of the former monolithic `App.tsx`.
+- Level 16 (Addition 1-30) and Level 17 (Subtraction 1-30) topics, each with placeholder modules for the main level (x.0) and sub-levels (x.1, x.2), plus an info icon on every module that opens its level specification.
 - Workspace agent customizations folder (`agents/` / `.agents/`) with:
   - `taste` skill: Anti-slop frontend design framework from [tasteskill.dev](https://www.tasteskill.dev/).
   - `graphify` skill: Codebase architecture knowledge graph extractor and query tool from [Graphify](https://github.com/Graphify-Labs/graphify).

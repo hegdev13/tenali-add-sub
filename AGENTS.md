@@ -18,9 +18,11 @@ tenali-add-sub/
 │   │   │   ├── types.ts                      # Contracts: Topic & LearningModule
 │   │   │   ├── index.ts                      # Master Topic Registry (TOPICS array)
 │   │   │   ├── <topic-slug>/                 # Individual topic folder
-│   │   │   │   ├── <ModuleName>Module.tsx    # Interactive prototype component
+│   │   │   │   ├── <ModuleName>Module.tsx    # Module page; multi-task modules put each task in tasks/<TaskN>.tsx
+│   │   │   ├── <topic>.css               # Styles for that topic (keep out of App.tsx / index.css)
 │   │   │   │   └── index.ts                  # Topic metadata & export
-│   │   ├── App.tsx                           # Master Gallery, Navigation & Sandbox shell
+│   │   ├── components/                       # Shared UI: Sidebar, TopBar, GalleryOverview, Playground, modals, WinOverlay
+│   │   ├── App.tsx                           # Thin shell: state + composing the components above
 │   │   └── index.css                         # Global tokens, theme styles, animations
 │   ├── package.json
 │   └── vite.config.ts
@@ -45,7 +47,7 @@ Inside `frontend/src/topics/`, create a folder named after the concept (e.g., `f
 ### Step 2: Implement the Module Component
 Create `<ModuleName>Module.tsx` inside that folder.
 - Ensure all interactive buttons, inputs, and sliders have descriptive, unique `id` attributes.
-- Include pedagogical insight notes or visual cues (e.g., explain why a strategy like "make a 10" or "benchmark hopping" is being used).
+- Follow the **Example → Question → Answer → Verification** flow described in Section 2.5. Do not explain with paragraphs of text.
 - Use local React state for interactive parameters (numbers, reset states, step animations).
 
 ### Step 3: Define the Topic Configuration
@@ -81,6 +83,27 @@ export const myNewTopic: Topic = {
 ### Step 4: Register in Master Registry
 Import and append your topic to the `TOPICS` array in `frontend/src/topics/index.ts`.
 The module will immediately appear in the Gallery sidebar, search engine, and grade filter!
+
+---
+
+## 2.5 Prototype Philosophy: Example → Question → Answer → Verification
+
+These prototypes are fast showcases for the team, to be contributed later to the live Tenali site (https://tenali.fun/summership/). Keep the structure and look close to that site so they port easily.
+
+Core idea of Tenali: anything can be taught by **showing an example, asking a question, and checking the answer**. Every module follows this loop:
+
+1. **Example**: show a worked case. Communicate it instinctively or with animation (objects moving, grouping, crossing out, a counter ticking), with a short caption naming what is being done at each step.
+2. **Question**: ask the student a similar question. Questions must always be asked; a module is never just a demo.
+3. **Answer**: the student responds by interacting (typing, tapping, dragging objects).
+4. **Verification**: check the answer and give clear, preferably visual, feedback (correct or not, and what the right answer looks like).
+
+Rules:
+- No explanatory paragraphs. Understanding must come from the visuals, the animation and short captions. Do not add "Pedagogical Goal" or insight text blocks to the UI.
+- Source worksheets (e.g. the FLN addition workbook) are **inspiration only**. Aim for a better interactive app in their spirit, not a copy of the worksheet.
+- Only use the level text, descriptions and specs the user has supplied. Do not invent descriptions, goals, tags or difficulty labels.
+- Every module and task has a URL (`src/router.ts`, no dependency): `/<module-id>` and `/<module-id>/task-<n>`, e.g. `/level-16-0/task-2`. Multi-task modules read the task from the URL (`parseTask`) and move on with `navigate(taskRoute(...))`.
+- Keep `App.tsx` thin. Put UI in `src/components/` and each task/prototype in its own file, with its own CSS next to it.
+- Work directly on the `main` branch in the main checkout. Do not use git worktrees.
 
 ---
 

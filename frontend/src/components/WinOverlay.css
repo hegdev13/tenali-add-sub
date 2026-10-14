@@ -1,0 +1,74 @@
+.win-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 248, 232, 0.65);
+  z-index: 10;
+  animation: winFade 0.3s ease-out;
+}
+
+.win-card {
+  position: relative;
+  text-align: center;
+  padding: 28px 32px;
+  background: #fff8e8;
+  border: 4px solid #b98d57;
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(90, 58, 20, 0.35);
+  animation: winPop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.win-card h3 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: #5a3a14;
+  margin-bottom: 18px;
+}
+
+.win-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.confetti-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetti-bit {
+  position: absolute;
+  top: -20px;
+  opacity: 0;
+  animation-name: confettiFall;
+  animation-timing-function: ease-in;
+  animation-iteration-count: infinite;
+}
+
+@keyframes confettiFall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(520px) rotate(540deg);
+  }
+}
+
+@keyframes winFade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes winPop {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}

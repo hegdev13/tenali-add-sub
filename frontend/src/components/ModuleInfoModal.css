@@ -1,0 +1,53 @@
+/* Level info icon + modal */
+.module-mini-item {
+  gap: 8px;
+}
+
+.module-mini-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.info-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 999px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+#level-info-modal {
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.info-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin: 16px 0 6px;
+}
+
+.info-section-text,
+.info-meta {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.info-list {
+  padding-left: 20px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text-main);
+}
+
+.info-overview {
+  margin-top: 20px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border-subtle);
+}

@@ -1,5 +1,8 @@
 import type { Topic } from './types';
 
+import { level16Topic } from './level-16-addition-1-30';
+import { level17Topic } from './level-17-subtraction-1-30';
+
 export * from './types';
 
 /**
@@ -11,7 +14,8 @@ export * from './types';
  * 4. Import and append the Topic to this TOPICS array below!
  */
 export const TOPICS: Topic[] = [
-  // Add your topics here
+  level16Topic,
+  level17Topic,
 ];
 
 export const getTopicById = (id: string): Topic | undefined => {
