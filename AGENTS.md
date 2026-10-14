@@ -2,6 +2,8 @@
 
 Welcome to **Tenali Math Lab** (`tenali-add-sub`). This repository is a playground and structured repository of high-fidelity prototypes for foundational math learning modules (addition, subtraction, place value, and mental math strategies).
 
+**Purpose:** this is a fast prototyping environment to make and test out modules for [vicharanashala/tenali](https://github.com/vicharanashala/tenali). Each task is mapped to a Level described in [vicharanashala/fln](https://github.com/vicharanashala/fln/tree/main/FLN%20Levels%20Structure) (FLN Levels Structure). At a main level (e.g. `16.0`), the prerequisites are revised first, so the module can serve as a refresher / bridge-course activity. Prototypes are meant to be contributed to Tenali later, so keep their structure and look close to it.
+
 This document outlines the architecture, design rules, and protocols that all AI coding agents and human contributors must follow.
 
 ---

@@ -1,6 +1,12 @@
 # tenali-add-sub
 
-A collection and playground of interactive prototypes for foundational math (addition, subtraction, and place-value visual models).
+A fast prototyping environment to make and test out modules for [vicharanashala/tenali](https://github.com/vicharanashala/tenali): interactive prototypes for foundational math (addition, subtraction, and place-value visual models) that can later be contributed to Tenali.
+
+## How this maps to Tenali and FLN
+
+- **Prototyping first.** Modules here are quick, showcase-ready prototypes. They follow Tenali's core idea of teaching through *example → question → answer → verification*, and are kept close to Tenali's structure and look so they port easily.
+- **Tasks map to Levels.** Each task is mapped to a Level described in [vicharanashala/fln](https://github.com/vicharanashala/fln/tree/main/FLN%20Levels%20Structure) (FLN Levels Structure). For example, Level 16 (addition 1-30) and Level 17 (subtraction 1-30) each have a main level (`16.0`, `17.0`) and remediation sub-levels (`16.1`, `16.2`, ...).
+- **Refresher / bridge course.** At a main level (e.g. `16.0`), the prerequisites are revised first, so the module can be used as a refresher or bridge-course activity. For `16.0` that is Task 1 (counting as putting things away one by one), Task 2 (ordering 1-10) and Task 3 (counting is adding one).
 
 ## Project Structure
 
@@ -8,8 +14,10 @@ A collection and playground of interactive prototypes for foundational math (add
 tenali-add-sub/
 ├── frontend/          # React + Vite + TypeScript prototype gallery
 │   ├── src/
-│   │   ├── topics/    # 📂 All learning module prototypes
-│   │   ├── App.tsx    # Gallery shell, switcher & sandbox
+│   │   ├── topics/    # 📂 All learning module prototypes (one folder per Level)
+│   │   ├── components/# Shared UI (sidebar, gallery, modals, win overlay, hint hand)
+│   │   ├── router.ts  # Tiny URL router: /<module-id>/task-<n>
+│   │   ├── App.tsx    # Thin shell composing the components
 │   │   └── index.css  # Dark-mode styling, micro-animations & tokens
 ├── backend/           # Node.js + Express + TypeScript API server
 ├── AGENTS.md          # AI agent & contributor guidelines

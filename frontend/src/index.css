@@ -354,6 +354,26 @@ body {
   margin-bottom: 24px;
 }
 
+.hero-points {
+  max-width: 720px;
+  margin: 0 0 24px;
+  padding-left: 20px;
+  color: var(--text-muted);
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.hero-points li + li {
+  margin-top: 6px;
+}
+
+.hero-points a {
+  color: var(--text-main);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .hero-stats-row {
   display: flex;
   flex-wrap: wrap;

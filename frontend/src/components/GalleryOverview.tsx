@@ -10,6 +10,10 @@ interface GalleryOverviewProps {
   onOpenGuide: () => void;
 }
 
+const TENALI_REPO = 'https://github.com/vicharanashala/tenali';
+const FLN_LEVELS =
+  'https://github.com/vicharanashala/fln/tree/main/FLN%20Levels%20Structure';
+
 const totalPrototypesCount = TOPICS.reduce((acc, t) => acc + t.modules.length, 0);
 
 export const GalleryOverview = ({ topics, onLaunch, onInfo, onOpenGuide }: GalleryOverviewProps) => (
@@ -19,12 +23,28 @@ export const GalleryOverview = ({ topics, onLaunch, onInfo, onOpenGuide }: Galle
         <Sparkles size={14} /> Interactive Math Lab
       </div>
       <h2 className="hero-title">
-        Visualizing <span>Addition & Subtraction</span> Concepts
+        Prototyping <span>Tenali Modules</span>, fast
       </h2>
-      <p className="hero-desc">
-        A sandbox and repository of high-fidelity learning module prototypes designed to transform
-        finger-counting and rote algorithms into concrete, visual intuition.
-      </p>
+      <ul className="hero-points" id="hero-points">
+        <li>
+          A fast prototyping environment to make and test out modules for{' '}
+          <a href={TENALI_REPO} target="_blank" rel="noreferrer">
+            vicharanashala/tenali
+          </a>
+          .
+        </li>
+        <li>
+          Each task is mapped to a Level described in{' '}
+          <a href={FLN_LEVELS} target="_blank" rel="noreferrer">
+            vicharanashala/fln
+          </a>{' '}
+          (FLN Levels Structure).
+        </li>
+        <li>
+          At a main level (e.g. 16.0), the prerequisites are revised first, so it can be used as a
+          refresher or bridge-course activity.
+        </li>
+      </ul>
 
       <div className="hero-stats-row">
         <div className="stat-item">

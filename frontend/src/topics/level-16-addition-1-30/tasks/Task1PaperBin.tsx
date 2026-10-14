@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { RotateCcw, Shuffle } from 'lucide-react';
 import { WinOverlay } from '../../../components/WinOverlay';
+import { HintHand } from '../../../components/HintHand';
 import '../level16.css';
 
 interface Paper {
@@ -110,6 +111,15 @@ const makePapers = (count: number): Paper[] =>
   });
 
 const DEFAULT_COUNT = 7;
+const IDLE_MS = 3000;
+
+interface Hint {
+  paper: Paper;
+  sx: number;
+  sy: number;
+  ex: number;
+  ey: number;
+}
 
 const BasketIcon = () => (
   <svg width="120" height="104" viewBox="0 0 120 104" aria-hidden="true">
@@ -138,6 +148,9 @@ export const Task1PaperBin = ({ onNext }: Task1PaperBinProps) => {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [sliderValue, setSliderValue] = useState(DEFAULT_COUNT);
   const [showWin, setShowWin] = useState(false);
+  const [hint, setHint] = useState<Hint | null>(null);
+  const idleRef = useRef<number | undefined>(undefined);
+  const papersRef = useRef<Paper[]>([]);
 
   const isOverBin = (clientX: number, clientY: number) => {
     const r = binRef.current?.getBoundingClientRect();
@@ -150,6 +163,41 @@ export const Task1PaperBin = ({ onNext }: Task1PaperBinProps) => {
       clientY <= r.bottom + pad
     );
   };
+
+  useEffect(() => {
+    papersRef.current = papers;
+  }, [papers]);
+
+  // after 3 seconds of silence, a hand shows a paper going into the basket
+  const computeHint = useCallback((): Hint | null => {
+    const canvas = canvasRef.current;
+    const bin = binRef.current;
+    const paper = papersRef.current[0];
+    const paperEl = paper && document.getElementById(`refresher-paper-${paper.id}`);
+    if (!canvas || !bin || !paperEl) return null;
+    const c = canvas.getBoundingClientRect();
+    const p = paperEl.getBoundingClientRect();
+    const b = bin.getBoundingClientRect();
+    return {
+      paper,
+      sx: p.left + p.width / 2 - c.left,
+      sy: p.top + p.height / 2 - c.top,
+      ex: b.left + b.width / 2 - c.left,
+      ey: b.top + b.height / 2 - c.top,
+    };
+  }, []);
+
+  // any user input hides the hint and restarts the silence timer
+  const poke = useCallback(() => {
+    window.clearTimeout(idleRef.current);
+    setHint((h) => (h ? null : h));
+    idleRef.current = window.setTimeout(() => setHint(computeHint()), IDLE_MS);
+  }, [computeHint]);
+
+  useEffect(() => {
+    poke();
+    return () => window.clearTimeout(idleRef.current);
+  }, [poke]);
 
   const handleDown = (e: ReactPointerEvent<HTMLDivElement>, id: number) => {
     e.preventDefault(); // stops the browser from selecting text while dragging
@@ -165,12 +213,14 @@ export const Task1PaperBin = ({ onNext }: Task1PaperBinProps) => {
     const y = Math.min(98, Math.max(2, ((e.clientY - rect.top) / rect.height) * 100));
     setPapers((ps) => ps.map((p) => (p.id === id ? { ...p, x, y } : p)));
     setOverBin(isOverBin(e.clientX, e.clientY));
+    poke();
   };
 
   const handleUp = (e: ReactPointerEvent<HTMLDivElement>, id: number) => {
     if (dragId !== id) return;
     setDragId(null);
     setOverBin(false);
+    poke();
     if (isOverBin(e.clientX, e.clientY)) {
       setPapers((ps) => ps.filter((p) => p.id !== id));
       setBinCount((c) => c + 1);
@@ -201,7 +251,7 @@ export const Task1PaperBin = ({ onNext }: Task1PaperBinProps) => {
 
 
   return (
-    <section className="refresher-card" id="refresher-count-bin">
+    <section className="refresher-card" id="refresher-count-bin" onPointerDown={poke}>
       <h2 className="task-heading" id="task-1-heading">
         Task 1
       </h2>
@@ -309,6 +359,20 @@ export const Task1PaperBin = ({ onNext }: Task1PaperBinProps) => {
             ))}
           </div>
         </div>
+
+        {hint && dragId === null && !done && (
+          <HintHand
+            key={`${hint.paper.id}-${hint.sx}-${hint.ex}`}
+            sx={hint.sx}
+            sy={hint.sy}
+            ex={hint.ex}
+            ey={hint.ey}
+            size={hint.paper.w}
+            height={hint.paper.h}
+            color={hint.paper.color}
+            clip={hint.paper.clip}
+          />
+        )}
 
         {showWin && (
           <WinOverlay

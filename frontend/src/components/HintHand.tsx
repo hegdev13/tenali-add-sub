@@ -10,12 +10,16 @@ interface HintHandProps {
   ey: number;
   /** size and colour of the translucent block the hand carries */
   size: number;
+  /** defaults to `size` (square) */
+  height?: number;
   color: string;
+  /** clip-path for irregular shapes such as paper bits */
+  clip?: string;
   label?: ReactNode;
 }
 
 /** Translucent hand that carries a block from (sx, sy) to (ex, ey), fades, and repeats. */
-export const HintHand = ({ sx, sy, ex, ey, size, color, label }: HintHandProps) => (
+export const HintHand = ({ sx, sy, ex, ey, size, height = size, color, clip, label }: HintHandProps) => (
   <div
     className="hint-hand"
     style={{ '--sx': sx, '--sy': sy, '--ex': ex, '--ey': ey } as CSSProperties}
@@ -24,10 +28,12 @@ export const HintHand = ({ sx, sy, ex, ey, size, color, label }: HintHandProps) 
       className="num-block hint-ghost"
       style={{
         width: size,
-        height: size,
+        height,
         left: -size / 2,
-        top: -size / 2,
+        top: -height / 2,
         background: color,
+        clipPath: clip,
+        borderRadius: clip ? 0 : undefined,
         fontSize: size * 0.5,
       }}
     >
