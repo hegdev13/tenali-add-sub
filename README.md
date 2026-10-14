@@ -22,6 +22,7 @@ tenali-add-sub/
 ├── backend/           # Node.js + Express + TypeScript API server
 ├── AGENTS.md          # AI agent & contributor guidelines
 ├── CHANGELOG.md       # Keep a Changelog standard release history
+├── NOTES.md           # Ideas, notes and to-dos
 ├── .gitignore         # Ignores node_modules, build outputs, and .env files
 ├── .env.example       # Root environment variable template
 └── package.json       # Root scripts to orchestrate frontend and backend
@@ -52,6 +53,10 @@ npm run install:all
   ```bash
   npm run dev:backend
   ```
+
+## Notes & To-Dos
+
+Ideas, notes and the running to-do list live in [NOTES.md](NOTES.md).
 
 ## Contributing & Adding New Prototypes
 
