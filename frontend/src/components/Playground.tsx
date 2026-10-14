@@ -1,4 +1,5 @@
 import type { Topic, LearningModule } from '../topics';
+import { TaskRunner } from './TaskRunner';
 
 interface PlaygroundProps {
   topic: Topic;
@@ -23,7 +24,11 @@ export const Playground = ({ topic, module, onSelectModule }: PlaygroundProps) =
         ))}
       </div>
 
-      <ModuleComponent key={module.id} />
+      {module.tasks ? (
+        <TaskRunner key={module.id} module={module} />
+      ) : (
+        ModuleComponent && <ModuleComponent key={module.id} />
+      )}
     </div>
   );
 };

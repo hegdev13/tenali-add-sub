@@ -21,6 +21,17 @@ export interface TopicOverview {
   topicsCovered: string[];
 }
 
+/** Props every task receives: `onNext` moves on to the following task (a no-op on the last one). */
+export interface TaskProps {
+  onNext: () => void;
+}
+
+export interface ModuleTask {
+  /** Tab label, e.g. "Task 1". The URL is /<module-id>/task-<position>. */
+  title: string;
+  component: ComponentType<TaskProps>;
+}
+
 export interface LearningModule {
   id: string;
   title: string;
@@ -28,7 +39,10 @@ export interface LearningModule {
   category?: ModuleCategory;
   difficulty?: ModuleDifficulty;
   pedagogicalGoal?: string;
-  component: ComponentType;
+  /** A single-screen module. Use `tasks` instead for a module made of several tasks. */
+  component?: ComponentType;
+  /** Ordered tasks: tabs, URLs and "Next task" are generated from this list. */
+  tasks?: ModuleTask[];
   tags?: string[];
   /** Spec details revealed by the info icon */
   info?: ModuleInfo;

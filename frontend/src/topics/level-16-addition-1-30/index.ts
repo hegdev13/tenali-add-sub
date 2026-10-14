@@ -1,6 +1,8 @@
 import type { Topic } from '../types';
 import { makePlaceholder } from '../PlaceholderModule';
-import { Level16Module } from './Level16Module';
+import { Task1PaperBin } from './tasks/Task1PaperBin';
+import { Task2OrderBlocks } from './tasks/Task2OrderBlocks';
+import { Task3CountBlocks } from './tasks/Task3CountBlocks';
 
 const overview = {
   classLabel: 'Class 1',
@@ -32,7 +34,11 @@ export const level16Topic: Topic = {
       id: 'level-16-0',
       title: 'Level 16.0 (Main)',
       description: 'The number range is 1-30. 2 digit addition without carry.',
-      component: Level16Module,
+      tasks: [
+        { title: 'Task 1', component: Task1PaperBin },
+        { title: 'Task 2', component: Task2OrderBlocks },
+        { title: 'Task 3', component: Task3CountBlocks },
+      ],
       info: {
         levelCode: '16.0',
         notes: [

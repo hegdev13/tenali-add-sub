@@ -17,14 +17,18 @@ tenali-add-sub/
 ├── frontend/
 │   ├── src/
 │   │   ├── topics/                           # 📂 All learning prototype topics live here
-│   │   │   ├── types.ts                      # Contracts: Topic & LearningModule
+│   │   │   ├── types.ts                      # Contracts: Topic, LearningModule, ModuleTask
 │   │   │   ├── index.ts                      # Master Topic Registry (TOPICS array)
-│   │   │   ├── <topic-slug>/                 # Individual topic folder
-│   │   │   │   ├── <ModuleName>Module.tsx    # Module page; multi-task modules put each task in tasks/<TaskN>.tsx
-│   │   │   ├── <topic>.css               # Styles for that topic (keep out of App.tsx / index.css)
-│   │   │   │   └── index.ts                  # Topic metadata & export
-│   │   ├── components/                       # Shared UI: Sidebar, TopBar, GalleryOverview, Playground, modals, WinOverlay
-│   │   ├── App.tsx                           # Thin shell: state + composing the components above
+│   │   │   └── <topic-slug>/                 # One folder per Level / topic
+│   │   │       ├── index.ts                  # Topic metadata; each module lists its `tasks`
+│   │   │       ├── tasks/<TaskN>.tsx         # One file per task (UI only)
+│   │   │       ├── logic/<name>.ts           # Pure game rules + <name>.test.ts (Vitest)
+│   │   │       └── <topic>.css               # Styles for that topic
+│   │   ├── components/                       # Shared UI: Sidebar, TopBar, GalleryOverview, Playground, TaskRunner, modals, WinOverlay, HintHand, PlusOne
+│   │   ├── hooks/                            # useIdleHint, useFloats, useDelayedFlag
+│   │   ├── lib/canvas.ts                     # Pointer / drag / hit-test helpers
+│   │   ├── router.ts                         # Tiny URL router
+│   │   ├── App.tsx                           # Thin shell: composes the components above
 │   │   └── index.css                         # Global tokens, theme styles, animations
 │   ├── package.json
 │   └── vite.config.ts
@@ -82,6 +86,15 @@ export const myNewTopic: Topic = {
 };
 ```
 
+For a module made of several tasks, replace `component` with an ordered `tasks` list. Tabs, the `/<module-id>/task-<n>` routes and "Next task" are all generated from it:
+
+```typescript
+tasks: [
+  { title: 'Task 1', component: Task1PaperBin },   // components receive { onNext }
+  { title: 'Task 2', component: Task2OrderBlocks },
+],
+```
+
 ### Step 4: Register in Master Registry
 Import and append your topic to the `TOPICS` array in `frontend/src/topics/index.ts`.
 The module will immediately appear in the Gallery sidebar, search engine, and grade filter!
@@ -104,6 +117,7 @@ Rules:
 - Source worksheets (e.g. the FLN addition workbook) are **inspiration only**. Aim for a better interactive app in their spirit, not a copy of the worksheet.
 - Only use the level text, descriptions and specs the user has supplied. Do not invent descriptions, goals, tags or difficulty labels.
 - Every module and task has a URL (`src/router.ts`, no dependency): `/<module-id>` and `/<module-id>/task-<n>`, e.g. `/level-16-0/task-2`. Multi-task modules read the task from the URL (`parseTask`) and move on with `navigate(taskRoute(...))`.
+- Keep task files UI-only: put game rules in `topics/<topic>/logic/*.ts` as pure functions (take an optional `rng`) with a `*.test.ts` beside them, and reuse the shared hooks (`useIdleHint`, `useFloats`, `useDelayedFlag`), `lib/canvas.ts` helpers and `PlusOne` / `HintHand` / `WinOverlay` instead of re-implementing them.
 - Keep `App.tsx` thin. Put UI in `src/components/` and each task/prototype in its own file, with its own CSS next to it.
 - Work directly on the `main` branch in the main checkout. Do not use git worktrees.
 
@@ -125,14 +139,14 @@ Rules:
 
 ## 4. Verification and Build Discipline
 
-Before finishing any task, agents **must** verify that the build is completely green:
+Before finishing any task, agents **must** verify that lint, tests and the build are all green:
 
 ```bash
-# Test frontend compilation and bundle
-npm --prefix frontend run build
+# Lint (oxlint) + unit tests (Vitest) + TypeScript/Vite build
+npm run check:frontend
 ```
 
-Do not consider a task complete if `tsc` or `vite build` throws compilation errors.
+Do not consider a task complete if lint warnings, a failing test, or a `tsc` / `vite build` error remain.
 
 ---
 

@@ -8,7 +8,7 @@ trigger: always_on
 1. **Strict TypeScript Compliance**:
    - `verbatimModuleSyntax` is enabled in `tsconfig.app.json`. You must use `import type { ... }` for pure types and interfaces.
    - Clean up unused variables and imports (`noUnusedLocals`).
-   - Run `npm --prefix frontend run build` to verify every change before finishing.
+   - Run `npm run check:frontend` (lint + tests + build) to verify every change before finishing.
 
 2. **State Management**:
    - Keep interactive prototype state localized in the module component using React `useState` or `useReducer`.

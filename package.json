@@ -7,6 +7,9 @@
     "dev:backend": "npm --prefix backend run dev",
     "build:frontend": "npm --prefix frontend run build",
     "install:all": "npm --prefix frontend install && npm --prefix backend install",
-    "install": "npm run install:all"
+    "install": "npm run install:all",
+    "lint:frontend": "npm --prefix frontend run lint",
+    "test:frontend": "npm --prefix frontend run test",
+    "check:frontend": "npm run lint:frontend && npm run test:frontend && npm run build:frontend"
   }
 }

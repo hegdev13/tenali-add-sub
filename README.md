@@ -15,7 +15,9 @@ tenali-add-sub/
 ├── frontend/          # React + Vite + TypeScript prototype gallery
 │   ├── src/
 │   │   ├── topics/    # 📂 All learning module prototypes (one folder per Level)
-│   │   ├── components/# Shared UI (sidebar, gallery, modals, win overlay, hint hand)
+│   │   ├── components/# Shared UI (sidebar, gallery, task runner, modals, win overlay, hint hand)
+│   │   ├── hooks/     # useIdleHint, useFloats, useDelayedFlag
+│   │   ├── lib/       # Canvas / drag helpers
 │   │   ├── router.ts  # Tiny URL router: /<module-id>/task-<n>
 │   │   ├── App.tsx    # Thin shell composing the components
 │   │   └── index.css  # Dark-mode styling, micro-animations & tokens
@@ -44,10 +46,11 @@ npm run install:all
   ```
   Open [http://localhost:5173](http://localhost:5173) to view the interactive gallery and prototypes.
 
-- **Build Check**:
+- **Checks** (lint + unit tests + build):
   ```bash
-  npm run build:frontend
+  npm run check:frontend
   ```
+  Or individually: `npm run lint:frontend`, `npm run test:frontend`, `npm run build:frontend`.
 
 - **Backend**:
   ```bash
