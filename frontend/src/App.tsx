@@ -18,13 +18,9 @@ export const App = () => {
 
   // the URL decides what is open: /<module-id>[/task-<n>]
   const moduleSegment = path.split('/').filter(Boolean)[0];
-  const active = useMemo(() => {
-    for (const topic of TOPICS) {
-      const module = topic.modules.find((m) => m.id === moduleSegment);
-      if (module) return { topic, module };
-    }
-    return null;
-  }, [moduleSegment]);
+  const active = TOPICS.flatMap((topic) =>
+    topic.modules.map((module) => ({ topic, module }))
+  ).find(({ module }) => module.id === moduleSegment);
   const activeTopic = active?.topic;
   const activeModule = active?.module ?? null;
 

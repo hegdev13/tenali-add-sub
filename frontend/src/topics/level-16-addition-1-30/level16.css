@@ -112,33 +112,6 @@
   transform: scale(1.12) rotate(-3deg);
 }
 
-.plus-one {
-  position: absolute;
-  left: 50%;
-  top: 6px;
-  font-size: 1.8rem;
-  font-weight: 800;
-  line-height: 1;
-  color: #2f8a3a;
-  text-shadow: 0 1px 0 #fff;
-  pointer-events: none;
-  animation: plusOneFloat 1.8s ease-out forwards;
-}
-
-@keyframes plusOneFloat {
-  0% {
-    opacity: 0;
-    transform: translate(-50%, 0) scale(0.7);
-  }
-  20% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(-50%, -90px) scale(1.2);
-  }
-}
-
 .rhyme-card {
   text-align: center;
   padding: 18px 20px;
@@ -355,11 +328,6 @@
   background: #fff8e8;
   border: 3px solid #b98d57;
   border-radius: 16px;
-}
-
-.plus-one.plus-one-side {
-  left: 100%;
-  top: 14px;
 }
 
 .num-block.pop-in {

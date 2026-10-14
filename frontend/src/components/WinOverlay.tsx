@@ -1,8 +1,19 @@
-import { useMemo } from 'react';
+import { useState } from 'react';
 import { RotateCcw, ArrowRight } from 'lucide-react';
 import './WinOverlay.css';
 
 const CONFETTI_COLORS = ['#ff6b81', '#ffd166', '#4cd964', '#4fc3f7', '#b388ff', '#ff9f43'];
+
+const makeConfetti = () =>
+  Array.from({ length: 70 }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 1.2,
+    duration: 2.2 + Math.random() * 1.8,
+    size: 7 + Math.random() * 8,
+    color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+    round: i % 3 === 0,
+  }));
 
 interface WinOverlayProps {
   /** Prefix for the element ids, e.g. "refresher" -> "refresher-win" */
@@ -14,19 +25,7 @@ interface WinOverlayProps {
 
 /** Confetti + message card shown on top of a (position: relative) canvas. */
 export const WinOverlay = ({ idPrefix, title, onTryAgain, onNext }: WinOverlayProps) => {
-  const confetti = useMemo(
-    () =>
-      Array.from({ length: 70 }, (_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        delay: Math.random() * 1.2,
-        duration: 2.2 + Math.random() * 1.8,
-        size: 7 + Math.random() * 8,
-        color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-        round: i % 3 === 0,
-      })),
-    []
-  );
+  const [confetti] = useState(makeConfetti);
 
   return (
     <div className="win-overlay" id={`${idPrefix}-win`}>

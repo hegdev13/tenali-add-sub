@@ -1,13 +1,30 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import type { PointerEvent as ReactPointerEvent } from 'react';
 import { RotateCcw } from 'lucide-react';
 import { HintHand } from '../../../components/HintHand';
 import { WinOverlay } from '../../../components/WinOverlay';
+import { useIdleHint } from '../../../hooks/useIdleHint';
+import { useDelayedFlag } from '../../../hooks/useDelayedFlag';
+import {
+  canvasPoint,
+  indexOfElementAt,
+  pathBetween,
+  startPointerDrag,
+  type HintPath,
+} from '../../../lib/canvas';
+import {
+  ORDER_VALUES,
+  allFilled,
+  applyDrop,
+  blockSize,
+  emptySlots,
+  isSolved,
+  nextMisplaced,
+  shuffledValues,
+  type Cell,
+  type Origin,
+} from '../logic/order';
 import '../level16.css';
-
-const COUNT = 10;
-const VALUES = Array.from({ length: COUNT }, (_, i) => i + 1);
-const IDLE_MS = 3000;
 
 const BLOCK_COLORS = [
   '#e63946',
@@ -24,23 +41,7 @@ const BLOCK_COLORS = [
 
 // the frame of 10 boxes stays on screen; each box is a little larger than the biggest block
 const SLOT_SIZE = 69;
-
-// each block is slightly bigger than the one before it
-const sizeOf = (v: number) => 34 + (v - 1) * 3;
-
-const shuffled = (): (number | null)[] => {
-  let arr = [...VALUES];
-  do {
-    arr = [...VALUES];
-    for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-  } while (arr.every((v, i) => v === i + 1));
-  return arr;
-};
-
-type Origin = { kind: 'tray' | 'slot'; index: number };
+const SLOT_HIT_PAD = 6;
 
 interface DragState {
   value: number;
@@ -49,13 +50,7 @@ interface DragState {
   y: number;
 }
 
-interface Hint {
-  value: number;
-  sx: number;
-  sy: number;
-  ex: number;
-  ey: number;
-}
+type Hint = HintPath & { value: number };
 
 interface Task2OrderBlocksProps {
   onNext: () => void;
@@ -64,104 +59,41 @@ interface Task2OrderBlocksProps {
 export const Task2OrderBlocks = ({ onNext }: Task2OrderBlocksProps) => {
   const canvasRef = useRef<HTMLDivElement>(null);
   const slotRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const idleRef = useRef<number | undefined>(undefined);
-  const slotsRef = useRef<(number | null)[]>([]);
 
-  const [slots, setSlots] = useState<(number | null)[]>(() => Array(COUNT).fill(null));
-  const [tray, setTray] = useState<(number | null)[]>(shuffled);
+  const [slots, setSlots] = useState<Cell[]>(emptySlots);
+  const [tray, setTray] = useState<Cell[]>(shuffledValues);
   const [drag, setDrag] = useState<DragState | null>(null);
-  const [hint, setHint] = useState<Hint | null>(null);
-  const [showWin, setShowWin] = useState(false);
 
-  const allFilled = slots.every((v) => v !== null);
-  const done = slots.every((v, i) => v === i + 1);
+  const done = isSolved(slots);
+  const showWin = useDelayedFlag(done, 700);
 
-  useEffect(() => {
-    slotsRef.current = slots;
-  }, [slots]);
-
-  // work out the next helpful move: the smallest block not yet in its place
-  const computeHint = useCallback((): Hint | null => {
+  // the next helpful move: the smallest block not yet in its place
+  const { hint, poke } = useIdleHint<Hint>(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return null;
-    const cur = slotsRef.current;
-    const value = VALUES.find((v) => cur[v - 1] !== v);
-    if (!value) return null;
+    const value = nextMisplaced(slots);
+    if (!canvas || !value) return null;
     const blockEl = canvas.querySelector<HTMLElement>(`[data-block="${value}"]`);
     const slotEl = slotRefs.current[value - 1];
     if (!blockEl || !slotEl) return null;
-    const c = canvas.getBoundingClientRect();
-    const b = blockEl.getBoundingClientRect();
-    const s = slotEl.getBoundingClientRect();
-    return {
-      value,
-      sx: b.left + b.width / 2 - c.left,
-      sy: b.top + b.height / 2 - c.top,
-      ex: s.left + s.width / 2 - c.left,
-      ey: s.top + s.height / 2 - c.top,
-    };
-  }, []);
-
-  // any user input hides the hint and restarts the 3 second silence timer
-  const poke = useCallback(() => {
-    window.clearTimeout(idleRef.current);
-    setHint((h) => (h ? null : h));
-    idleRef.current = window.setTimeout(() => setHint(computeHint()), IDLE_MS);
-  }, [computeHint]);
-
-  useEffect(() => {
-    poke();
-    return () => window.clearTimeout(idleRef.current);
-  }, [poke]);
-
-  useEffect(() => {
-    if (!done) {
-      setShowWin(false);
-      return;
-    }
-    window.clearTimeout(idleRef.current);
-    const t = window.setTimeout(() => setShowWin(true), 700);
-    return () => window.clearTimeout(t);
-  }, [done]);
+    return { value, ...pathBetween(canvas, blockEl, slotEl) };
+  });
 
   const reset = () => {
-    setSlots(Array(COUNT).fill(null));
-    setTray(shuffled());
+    setSlots(emptySlots());
+    setTray(shuffledValues());
     setDrag(null);
-    setShowWin(false);
     poke();
   };
-
-  const toCanvas = (clientX: number, clientY: number) => {
-    const r = canvasRef.current?.getBoundingClientRect();
-    return r ? { x: clientX - r.left, y: clientY - r.top } : { x: 0, y: 0 };
-  };
-
-  const slotAt = (clientX: number, clientY: number) =>
-    slotRefs.current.findIndex((el) => {
-      if (!el) return false;
-      const r = el.getBoundingClientRect();
-      const pad = 6;
-      return (
-        clientX >= r.left - pad &&
-        clientX <= r.right + pad &&
-        clientY >= r.top - pad &&
-        clientY <= r.bottom + pad
-      );
-    });
 
   const handleDown = (e: ReactPointerEvent<HTMLDivElement>, value: number, origin: Origin) => {
     if (done) return;
-    e.preventDefault(); // stops the browser from selecting text while dragging
-    e.currentTarget.setPointerCapture(e.pointerId);
-    const { x, y } = toCanvas(e.clientX, e.clientY);
-    setDrag({ value, origin, x, y });
+    startPointerDrag(e);
+    setDrag({ value, origin, ...canvasPoint(canvasRef.current, e.clientX, e.clientY) });
   };
 
   const handleMove = (e: ReactPointerEvent<HTMLDivElement>) => {
     if (!drag) return;
-    const { x, y } = toCanvas(e.clientX, e.clientY);
-    setDrag({ ...drag, x, y });
+    setDrag({ ...drag, ...canvasPoint(canvasRef.current, e.clientX, e.clientY) });
     poke();
   };
 
@@ -170,37 +102,15 @@ export const Task2OrderBlocks = ({ onNext }: Task2OrderBlocksProps) => {
     const { value, origin } = drag;
     setDrag(null);
     poke();
-
-    const target = slotAt(e.clientX, e.clientY);
-    if (origin.kind === 'slot' && target === origin.index) return;
-
-    const nextSlots = [...slots];
-    const nextTray = [...tray];
-    if (origin.kind === 'slot') nextSlots[origin.index] = null;
-    else nextTray[origin.index] = null;
-
-    if (target >= 0) {
-      const occupant = nextSlots[target];
-      nextSlots[target] = value;
-      if (occupant !== null) {
-        // the block that was there swaps into the cell the dragged block came from
-        if (origin.kind === 'slot') nextSlots[origin.index] = occupant;
-        else nextTray[origin.index] = occupant;
-      }
-    } else if (origin.kind === 'slot') {
-      // dropped outside any slot: send it back to the tray
-      const free = nextTray.indexOf(null);
-      nextTray[free >= 0 ? free : 0] = value;
-    } else {
-      nextTray[origin.index] = value;
-    }
-    setSlots(nextSlots);
-    setTray(nextTray);
+    const target = indexOfElementAt(slotRefs.current, e.clientX, e.clientY, SLOT_HIT_PAD);
+    const next = applyDrop(slots, tray, value, origin, target);
+    setSlots(next.slots);
+    setTray(next.tray);
   };
 
   const renderBlock = (value: number, origin: Origin) => {
-    const size = sizeOf(value);
-    const wrong = allFilled && !done && origin.kind === 'slot' && value !== origin.index + 1;
+    const size = blockSize(value);
+    const wrong = allFilled(slots) && !done && origin.kind === 'slot' && value !== origin.index + 1;
     const lifted = drag?.value === value;
     return (
       <div
@@ -240,22 +150,22 @@ export const Task2OrderBlocks = ({ onNext }: Task2OrderBlocksProps) => {
         <p className="order-reference-label" id="order-reference-label">
           Arrange the blocks like this!
         </p>
-      <div className="order-row order-ref-row" id="order-reference-row">
-        {VALUES.map((v) => (
-          <div
-            key={v}
-            className="num-block ref-block"
-            style={{
-              width: sizeOf(v),
-              height: sizeOf(v),
-              background: BLOCK_COLORS[v - 1],
-              fontSize: sizeOf(v) * 0.5,
-            }}
-          >
-            {v}
-          </div>
-        ))}
-      </div>
+        <div className="order-row order-ref-row" id="order-reference-row">
+          {ORDER_VALUES.map((v) => (
+            <div
+              key={v}
+              className="num-block ref-block"
+              style={{
+                width: blockSize(v),
+                height: blockSize(v),
+                background: BLOCK_COLORS[v - 1],
+                fontSize: blockSize(v) * 0.5,
+              }}
+            >
+              {v}
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="order-canvas" ref={canvasRef} id="order-canvas" onPointerDown={poke}>
@@ -294,10 +204,10 @@ export const Task2OrderBlocks = ({ onNext }: Task2OrderBlocksProps) => {
             style={{
               left: drag.x,
               top: drag.y,
-              width: sizeOf(drag.value),
-              height: sizeOf(drag.value),
+              width: blockSize(drag.value),
+              height: blockSize(drag.value),
               background: BLOCK_COLORS[drag.value - 1],
-              fontSize: sizeOf(drag.value) * 0.5,
+              fontSize: blockSize(drag.value) * 0.5,
             }}
           >
             {drag.value}
@@ -311,7 +221,7 @@ export const Task2OrderBlocks = ({ onNext }: Task2OrderBlocksProps) => {
             sy={hint.sy}
             ex={hint.ex}
             ey={hint.ey}
-            size={sizeOf(hint.value)}
+            size={blockSize(hint.value)}
             color={BLOCK_COLORS[hint.value - 1]}
             label={hint.value}
           />
